@@ -90,8 +90,9 @@
 // @ is an alias to /src
 //import HelloWorld from '@/components/HelloWorld.vue'
 import {BFormInput,BButton,BButtonGroup,BIcon,BModal} from 'bootstrap-vue'
-import {db} from "../firebase/config.js"
-// import {collection} from "firebase/firestore"
+import { collection, addDoc } from "firebase/firestore"; 
+import db from "../firebase/config.js"
+
 export default {
   data(){
     return{
@@ -141,7 +142,7 @@ export default {
         this.varBool=false;
       }
     },
-    addElement(){
+  async addElement(){
     //   this.confirmButton();
     //   if(this.varBool){
     //     this.items.push({
@@ -153,9 +154,30 @@ export default {
     //   }else{
     //     alert("Ajout impossible car email invalide");
     // }
-    const champ={name:this.nom,prenom:this.prenom,email:this.email,password:this.password}
-    console.log(db,"db")
-    //db.collection("user").add(champ);
+    console.log(db)
+    const champ = {name: this.nom,
+    prenom: this.prenom,
+  email: this.email,
+password: this.password}
+addDoc(collection(db, 'user'), champ)
+.then(()=>{
+  console.log('reussi')
+})
+.catch((error)=>{
+  console.log('erreur', error)
+})
+    
+   
+
+
+  
+  },
+ async getStudents(){
+  db.collection().get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+        console.log(`${doc.name} => ${doc.data()}`);
+    });
+});
   },
     confirmDelete(){
       this.items.splice(this.indexItem,1)
@@ -171,6 +193,9 @@ export default {
       this.emailDetail=item.email;
       this.passwordDetail=item.password;
     } 
+  },
+  created(){
+    //this.getStudents()
   }
 }
 
